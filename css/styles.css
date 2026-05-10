@@ -3258,10 +3258,66 @@ a {
 html,
 body {
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 @media (max-width: 480px) {
   .hero-meta-bar {
     font-size: 0.78rem;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Consent label — keep the long text inside the form card on mobile
+   The <span> next to the checkbox is a flex item; without min-width:0
+   it cannot shrink below its intrinsic min-content width, so the
+   text overflows the card to the right on narrow viewports.
+   --------------------------------------------------------------- */
+.consent {
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.consent > input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.consent > span {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.consent .inline-policy-link {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Keep the form card itself bounded to its column on mobile */
+@media (max-width: 767px) {
+  .card-enquire,
+  .card-enquire-page {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-enquire,
+  .form-enquire--compact,
+  .form-enquire--full {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* In case the hero photo's intrinsic width pushed the layout */
+  .hero-photo,
+  .hero-photo-wrap {
+    max-width: 100%;
   }
 }
