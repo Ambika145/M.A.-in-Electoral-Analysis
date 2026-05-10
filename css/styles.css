@@ -48,6 +48,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -56,6 +58,12 @@ body {
   color: var(--text-dark);
   background: var(--white);
   line-height: 1.65;
+}
+
+/* Let grid/flex columns shrink on narrow viewports (prevents horizontal spill) */
+main {
+  min-width: 0;
+  max-width: 100%;
 }
 
 img {
@@ -450,21 +458,33 @@ a {
 .hero-grid {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 24px 20px 8px;
+  padding: 24px clamp(16px, 4vw, 20px) 8px;
   display: grid;
   gap: 22px;
   align-items: start;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
     "copy"
     "enquire"
     "photo";
 }
 
+.hero-grid > .hero-copy,
+.hero-grid > .hero-photo-wrap,
+.hero-grid > .hero-enquire {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero-enquire {
+  width: 100%;
+  justify-self: stretch;
+}
+
 /* Tablet: headline + form row, image full width below */
 @media (min-width: 768px) and (max-width: 1023px) {
   .hero-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
       "copy enquire"
       "photo photo";
@@ -482,7 +502,7 @@ a {
 /* Desktop: Text | Image | Form */
 @media (min-width: 1024px) {
   .hero-grid {
-    grid-template-columns: minmax(260px, 1.05fr) minmax(280px, 1fr) minmax(280px, 340px);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(240px, min(340px, 100%));
     grid-template-areas: "copy photo enquire";
     gap: 12px 28px;
     padding: 36px 20px 0;
@@ -573,9 +593,12 @@ a {
 .card-enquire {
   background: var(--form-grad);
   border-radius: var(--radius-lg);
-  padding: 22px 20px;
+  padding: clamp(18px, 4vw, 22px) clamp(16px, 4vw, 20px);
   color: var(--white);
   box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .enquire-heading {
@@ -587,9 +610,17 @@ a {
   text-align: center;
 }
 
-.form-enquire input,
+.form-enquire {
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+}
+
+.form-enquire input:not([type="checkbox"]):not([type="radio"]),
 .form-enquire select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border-radius: var(--radius-md);
   padding: 13px 16px;
   margin-bottom: 12px;
@@ -598,10 +629,17 @@ a {
   box-sizing: border-box;
 }
 
+.form-enquire input[type="checkbox"],
+.form-enquire input[type="radio"] {
+  width: auto;
+  max-width: none;
+  margin-bottom: 0;
+}
+
 /* Bottom page enquiry — full-width form field styling lives with FAQ / enquire-page section */
 
 /* Hero compact — semi-transparent white fields (reference) */
-.form-enquire--compact input,
+.form-enquire--compact input:not([type="checkbox"]):not([type="radio"]),
 .form-enquire--compact select {
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.22);
@@ -610,18 +648,18 @@ a {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.form-enquire--compact input::placeholder {
+.form-enquire--compact input:not([type="checkbox"])::placeholder {
   color: rgba(255, 255, 255, 0.95);
   font-style: normal;
 }
 
-.form-enquire--compact input:hover,
+.form-enquire--compact input:not([type="checkbox"]):not([type="radio"]):hover,
 .form-enquire--compact select:hover {
   border-color: rgba(255, 255, 255, 0.75);
   background: rgba(255, 255, 255, 0.28);
 }
 
-.form-enquire--compact input:focus,
+.form-enquire--compact input:not([type="checkbox"]):not([type="radio"]):focus,
 .form-enquire--compact select:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.95);
@@ -633,6 +671,8 @@ a {
   gap: 8px;
   margin-bottom: 12px;
   align-items: stretch;
+  width: 100%;
+  min-width: 0;
 }
 
 .phone-cc-select {
@@ -658,7 +698,8 @@ a {
 }
 
 .phone-row input {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   margin-bottom: 0;
 }
 
@@ -791,8 +832,10 @@ a {
 }
 
 .section-inner {
-  max-width: var(--max);
+  max-width: min(var(--max), 100%);
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .title-center {
@@ -845,10 +888,11 @@ a {
   align-items: center;
   gap: clamp(10px, 2vw, 18px);
   margin-bottom: clamp(14px, 2.2vw, 20px);
+  min-width: 0;
 }
 
 .highlights-carousel-viewport {
-  flex: 1;
+  flex: 1 1 0%;
   min-width: 0;
   overflow: hidden;
 }
@@ -1885,12 +1929,13 @@ a {
 
 .careers-panel {
   position: relative;
-  max-width: 1180px;
+  max-width: min(1180px, 100%);
   margin: 0 auto;
   border-radius: clamp(22px, 4vw, 32px);
   overflow: hidden;
   min-height: min(520px, 70vh);
   box-shadow: 0 24px 60px rgba(20, 12, 45, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
 }
 
 .careers-bg {
@@ -1917,6 +1962,8 @@ a {
   position: relative;
   z-index: 2;
   padding: clamp(36px, 5vw, 56px) clamp(18px, 3vw, 36px) clamp(40px, 5vw, 56px);
+  max-width: 100%;
+  min-width: 0;
 }
 
 .careers-layout {
@@ -1952,10 +1999,19 @@ a {
   }
 }
 
+/* Narrow phones: one column so labels have room (2×2 on 375px was ~150px/card — unreadable) */
 .careers-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(12px, 2vw, 18px);
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 480px) {
+  .careers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 640px) {
@@ -1970,6 +2026,8 @@ a {
   align-items: flex-start;
   gap: 12px;
   padding: clamp(16px, 2vw, 20px) clamp(14px, 2vw, 18px);
+  min-width: 0;
+  max-width: 100%;
   min-height: 0;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.94);
@@ -2012,12 +2070,17 @@ a {
 }
 
 .career-card__label {
-  font-size: clamp(0.78rem, 1.05vw, 0.88rem);
+  flex: 1 1 0%;
+  min-width: 0;
+  font-size: clamp(0.78rem, 2.8vw, 0.88rem);
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   letter-spacing: -0.015em;
   color: #4a148c;
   text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2908,7 +2971,9 @@ a {
 }
 
 .enquire-page-inner {
-  max-width: 1100px;
+  max-width: min(1100px, 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .title-enquire-purple {
@@ -2926,13 +2991,15 @@ a {
   border-radius: clamp(28px, 5vw, 40px);
   overflow: hidden;
   box-shadow: 0 20px 56px rgba(13, 27, 58, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  max-width: 1000px;
+  max-width: min(1000px, 100%);
   margin: 0 auto;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 @media (min-width: 900px) {
   .card-enquire-page {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     min-height: min(520px, 70vh);
   }
 }
@@ -2947,10 +3014,17 @@ a {
   );
   padding: clamp(28px, 4vw, 40px) clamp(22px, 3.5vw, 34px);
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.form-enquire--full input,
+.form-enquire--full input:not([type="checkbox"]):not([type="radio"]),
 .form-enquire--full select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.42);
   background: rgba(255, 255, 255, 0.16);
   color: var(--white);
@@ -2959,13 +3033,13 @@ a {
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-enquire--full input:hover,
+.form-enquire--full input:not([type="checkbox"]):not([type="radio"]):hover,
 .form-enquire--full select:hover {
   border-color: rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.22);
 }
 
-.form-enquire--full input:focus,
+.form-enquire--full input:not([type="checkbox"]):not([type="radio"]):focus,
 .form-enquire--full select:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.85);
@@ -2982,15 +3056,17 @@ a {
   padding-right: 38px;
 }
 
-.form-enquire--full input::placeholder {
+.form-enquire--full input:not([type="checkbox"])::placeholder {
   color: rgba(255, 255, 255, 0.92);
   font-style: normal;
 }
 
 .two-col-inputs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Bottom enquiry — integrated phone row (+91 + number in one control, no clipping with aside) */
@@ -3273,20 +3349,25 @@ body {
    it cannot shrink below its intrinsic min-content width, so the
    text overflows the card to the right on narrow viewports.
    --------------------------------------------------------------- */
+label.consent,
 .consent {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   flex-wrap: nowrap;
+  align-self: stretch;
 }
 
 .consent > input[type="checkbox"] {
   flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.15em;
 }
 
 .consent > span {
-  flex: 1 1 0;
+  flex: 1 1 0%;
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
